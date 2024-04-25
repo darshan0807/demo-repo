@@ -1,0 +1,553 @@
+{
+	"info": {
+		"_postman_id": "89988e29-d3bc-43e6-8929-6f534add8f47",
+		"name": "PAT+QA-UK",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26574104",
+		"_collection_link": "https://interstellar-comet-217709.postman.co/workspace/PAT%2B~b3a24cf5-8c66-4c18-973c-c0e0eee1dedf/collection/26574104-89988e29-d3bc-43e6-8929-6f534add8f47?action=share&source=collection_link&creator=26574104"
+	},
+	"item": [
+		{
+			"name": "Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let bodyData2 = JSON.parse(responseBody);\r",
+							"pm.environment.set(\"token\", bodyData2.jwtToken);\r",
+							"pm.test(\"Status code is 201\",() =>{\r",
+							"pm.expect(pm.response.code).to.eql(201)\r",
+							"});\r",
+							"\r",
+							"\r",
+							"const currentDate = new Date();\r",
+							"const tomorrow = new Date(currentDate);\r",
+							"tomorrow.setDate(currentDate.getDate() + 1);\r",
+							"\r",
+							"// Calculate the end date\r",
+							"const endDate = new Date(tomorrow);\r",
+							"endDate.setMonth(tomorrow.getMonth() + 3);\r",
+							"\r",
+							"// Calculate the start date based on the end date\r",
+							"const startDate = new Date(endDate);\r",
+							"startDate.setMonth(endDate.getMonth() - 3);\r",
+							"\r",
+							"// Adjust the end date to be two days before the same day of the month as the start date\r",
+							"endDate.setDate(startDate.getDate() - 2);\r",
+							"\r",
+							"// Format the start and end dates as \"YYYY-MM-DD\"\r",
+							"const formattedStartDate = formatDate(startDate);\r",
+							"const formattedEndDate = formatDate(endDate);\r",
+							"\r",
+							"// Store start date and end date in environment variables\r",
+							"pm.environment.set(\"startDate\", '\"' + formattedStartDate + '\"');\r",
+							"pm.environment.set(\"endDate\", '\"' + formattedEndDate + '\"');\r",
+							"\r",
+							"// Output the start and end dates\r",
+							"// console.log(\"startDate should be:\", formattedStartDate);\r",
+							"// console.log(\"endDate should be:\", formattedEndDate);\r",
+							"\r",
+							"// Function to format date as \"YYYY-MM-DD\"\r",
+							"function formatDate(date) {\r",
+							"    const year = date.getFullYear();\r",
+							"    const month = (date.getMonth() + 1).toString().padStart(2, '0');\r",
+							"    const day = date.getDate().toString().padStart(2, '0');\r",
+							"    return `${year}-${month}-${day}`;\r",
+							"}\r",
+							"\r",
+							"\r",
+							"  postman.setNextRequest(\"get-sub-category-details\")\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{pat-QA}}/auth/basic",
+					"host": [
+						"{{pat-QA}}"
+					],
+					"path": [
+						"auth",
+						"basic"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-sub-category-details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(\"subcategory api is started\")\r",
+							"pm.test(\" C3117461365 Status code is 200\",() =>{\r",
+							"pm.expect(pm.response.code).to.eql(200)\r",
+							"});\r",
+							"// console.log(responseBody)\r",
+							"let bodyData=JSON.parse(responseBody)\r",
+							"console.log(pm.environment.get('subsubcategoryidname'), \"this one\")\r",
+							"let subsubcategoryidname =  pm.environment.get('subsubcategoryidname')\r",
+							"let index = parseInt(pm.environment.get('count'));\r",
+							"console.log(pm.environment.get('subsubcategoryidList'))\r",
+							"let subcategories = JSON.parse (pm.environment.get('subsubcategoryidList'));\r",
+							"\r",
+							"\r",
+							"if((subcategories.length) === index){\r",
+							"    // console.log(\"all subcategories done  ......\")\r",
+							"    postman.setNextRequest(null)\r",
+							"} else {\r",
+							"\r",
+							"    var b = 0\r",
+							"\r",
+							"    for(let a of bodyData)\r",
+							"    {\r",
+							"        if(a.name==subsubcategoryidname)\r",
+							"        {\r",
+							"            // console.log(\"matched subcategory\")\r",
+							"            b=1\r",
+							"            pm.environment.set(\"subcategoriesbody\", JSON.stringify(a));\r",
+							"        }\r",
+							"    }\r",
+							"\r",
+							"    if(b!=1)\r",
+							"    {\r",
+							"        // console.log(\"error so again token subcategory\")\r",
+							"        console.log(pm.environment.get('nosubcategories'), \"11111111111111xcx\")\r",
+							"        let nosubcategories = JSON.parse (pm.environment.get('nosubcategories'));\r",
+							"        nosubcategories.push(pm.environment.get('subcatname'))\r",
+							"        pm.environment.set('nosubcategories',JSON.stringify(nosubcategories) );\r",
+							"        \r",
+							"        console.log(pm.environment.get('notCreatesubcategories'), \"icx\")\r",
+							"        // let notCreatesubcategories = JSON.parse (pm.environment.get('notCreatesubcategories'));\r",
+							"        // notCreatesubcategories.push(pm.environment.get('subsubcategoryidname'))\r",
+							"        // pm.environment.set('notCreatesubcategories',JSON.stringify(notCreatesubcategories) );\r",
+							"\r",
+							"        // let prevcount= parseInt(pm.environment.get(\"count\"));\r",
+							"        // let nowcount = parseInt(prevcount +1)\r",
+							"        // pm.environment.set('count',nowcount);\r",
+							"        if(subcategories.length === index){\r",
+							"        // console.log(\"all subcategories done inside prerequest in b=0......\")\r",
+							"        postman.setNextRequest(null)\r",
+							"        \r",
+							"    }\r",
+							"        \r",
+							"        postman.setNextRequest(\"get-rtm-details\")\r",
+							"    }\r",
+							"    else{\r",
+							"        // console.log('subcategory api is ended' )\r",
+							"        if(subcategories.length === index){\r",
+							"        // console.log(\"all subcategories done inside prerequest in b=1.....\")\r",
+							"        postman.setNextRequest(null)\r",
+							"    }\r",
+							"        postman.setNextRequest(\"get-rtm-details\")\r",
+							"    }\r",
+							"        if(subcategories.length === index){\r",
+							"        // console.log(\"all subcategories done inside prereques ful outside.....\")\r",
+							"        postman.setNextRequest(null)\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"let index = parseInt(pm.environment.get('count'));\r",
+							"// console.log(pm.environment.get('subsubcategoryidList'), \"pm.environment.get('subsubcategoryidList')\")\r",
+							"let subcategoryid = JSON.parse (pm.environment.get('subsubcategoryidList'));\r",
+							"pm.environment.set('subcatname',subcategoryid[index] );\r",
+							"// console.log('subcategoryid name',pm.environment.get('subcatname'))\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"function generateRandomAlphaNumeric(length) {\r",
+							"  let result = '';\r",
+							"  const characters = '0123456789';\r",
+							"  const charactersLength = characters.length;\r",
+							"\r",
+							"  for (let i = 0; i < length; i++) {\r",
+							"    result += characters.charAt(Math.floor(Math.random() * charactersLength));\r",
+							"  }\r",
+							"\r",
+							"  return result;\r",
+							"}\r",
+							"\r",
+							"// let index = parseInt(pm.environment.get('count'));\r",
+							"// console.log(\"index in family api\",index)\r",
+							"// let modelName = pm.environment.get('modelName')\r",
+							"//  pm.environment.set(\"uniquePlan\", JSON.stringify(modelName + index));\r",
+							"\r",
+							"\r",
+							"// Get the value of 'modelName' from the environment variables\r",
+							"let modelName = pm.environment.get('modelName');\r",
+							"\r",
+							"// Assuming 'indexValue' is a numeric variable representing an index\r",
+							"let indexValue = 123; // Replace with your actual index value\r",
+							"\r",
+							"// Check if 'modelName' and 'indexValue' have valid values\r",
+							"if (modelName !== null && modelName !== undefined && indexValue !== null && indexValue !== undefined) {\r",
+							"  // Convert 'indexValue' to a string explicitly\r",
+							"  let indexString = indexValue.toString();\r",
+							"\r",
+							"  // Generate a random number\r",
+							"//   let randomNumber = Math.floor(Math.random() * 1000).toString();\r",
+							"// let randtostr = randomNumber.toString();\r",
+							"  // Generate a unique name by concatenating modelName, indexString, and randomNumber\r",
+							"  let uniqueName = \r",
+							"  \"123\"+generateRandomAlphaNumeric(3).toString()+ generateRandomAlphaNumeric(3).toString() + generateRandomAlphaNumeric(3).toString();\r",
+							"\r",
+							"//   console.log(indexString);\r",
+							"//   console.log(randomNumber);\r",
+							"\r",
+							"  // Convert uniqueName to a string and trim any leading or trailing spaces\r",
+							"  let uniqueNameString = uniqueName.toString();\r",
+							"//   console.log(typeof uniqueNameString);\r",
+							"\r",
+							"  // Store the unique name in an environment variable\r",
+							"//   console.log(uniqueName, \"uniqueName\")\r",
+							"  pm.environment.set(\"uniquePlan\",JSON.stringify(uniqueName));\r",
+							"\r",
+							"//   console.log(\"Generated unique name:\", uniqueName);\r",
+							"//   console.log( pm.environment.get('uniquePlan'))\r",
+							"} else {\r",
+							"//   console.log(\"Invalid values for 'modelName' or 'indexValue'.\");\r",
+							"}\r",
+							"\r",
+							"// console.log(pm.environment.get('subsubcategoryidList'), \"pm.environment.get('subsubcategoryidList')\")\r",
+							"let subcategories = JSON.parse (pm.environment.get('subsubcategoryidList'));\r",
+							"pm.environment.set('subcatname',subcategories[index] );\r",
+							"// console.log('subcat name',pm.environment.get('subcatname'))\r",
+							"\r",
+							"    if(subcategories.length === index){\r",
+							"    // console.log(\"all subcategories done inside prerequest intially.....\")\r",
+							"    postman.setNextRequest(null)\r",
+							"}\r",
+							"\r",
+							"// let subCats = JSON.parse (pm.environment.get('subCatsList'));\r",
+							"// pm.environment.set('subCatname',subCats[index] );\r",
+							"// // console.log('sub cat name',pm.environment.get('subCatname'))\r",
+							"\r",
+							"// let cats = JSON.parse (pm.environment.get('catsList'));\r",
+							"// pm.environment.set('catname',cats[index] );\r",
+							"// // console.log('cat name',pm.environment.get('catname'))\r",
+							"\r",
+							"// console.log(pm.environment.get('rtmidList'), \"pm.environment.get('rtmidList')\")\r",
+							"let rtms = JSON.parse (pm.environment.get('rtmidList'));\r",
+							"pm.environment.set('rtmname',rtms[index] );\r",
+							"// console.log('rtm name',pm.environment.get('rtmname'))\r",
+							"\r",
+							"// let lineid = JSON.parse (pm.environment.get('lineidList'));\r",
+							"// pm.environment.set('lineidname',lineid[index] );\r",
+							"// // console.log('lineid name',pm.environment.get('lineidname'))\r",
+							"\r",
+							"// console.log(\"....is it done\",subcategories.length,index)\r",
+							"if(subcategories.length === index){\r",
+							"    // console.log(\"all subcategories done inside prerequest......\")\r",
+							"    postman.setNextRequest(null)\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{pat-QA}}/subcategories",
+					"host": [
+						"{{pat-QA}}"
+					],
+					"path": [
+						"subcategories"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get-rtm-details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// console.log(\"rtm api is started\")\r",
+							"pm.test(\" C3117461365 Status code is 200\",() =>{\r",
+							"pm.expect(pm.response.code).to.eql(200)\r",
+							"});\r",
+							"\r",
+							"// console.log(responseBody, \"respomse\")\r",
+							"let bodyData=JSON.parse(responseBody)\r",
+							"\r",
+							"let rtmname =  pm.environment.get('rtmname')\r",
+							"\r",
+							"let index = parseInt(pm.environment.get('count'));\r",
+							"\r",
+							"let rtms = JSON.parse(pm.environment.get('rtmidList'));\r",
+							"\r",
+							"\r",
+							"\r",
+							"if((rtms.length) === index){\r",
+							"    // console.log(\"all rtms done  ......\")\r",
+							"    postman.setNextRequest(null)\r",
+							"}\r",
+							"\r",
+							"\r",
+							"var b = 0\r",
+							"\r",
+							"for(let a of bodyData)\r",
+							"{\r",
+							"    if(a.rtm == rtmname)\r",
+							"    {\r",
+							"        // console.log(\"matched rtm\")\r",
+							"        b=1\r",
+							"        pm.environment.set(\"rtmsbody\", JSON.stringify(a));\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"if(b!=1)\r",
+							"{\r",
+							"    // console.log(\"error so again token rtm\")\r",
+							"    // console.log(pm.environment.get('nortms'), \"nortms\")\r",
+							"\r",
+							"    let nortms = JSON.parse (pm.environment.get('nortms'));\r",
+							"    nortms.push(pm.environment.get('rtmname'))\r",
+							"    pm.environment.set('nortms',JSON.stringify(nortms) );\r",
+							"    \r",
+							"    // console.log(pm.environment.get('notCreatertms'), \"notcreate\")\r",
+							"    let notCreatertms = JSON.parse (pm.environment.get('notCreatertms'));\r",
+							"    notCreatertms.push(pm.environment.get('rtmname'))\r",
+							"    pm.environment.set('notCreatertms',JSON.stringify(notCreatertms) );\r",
+							"\r",
+							"    \r",
+							"\r",
+							"\r",
+							"    let prevcount= parseInt(pm.environment.get(\"count\"));\r",
+							"    let nowcount = parseInt(prevcount +1)\r",
+							"    pm.environment.set('count',nowcount);\r",
+							"    if((rtms.length) === index){\r",
+							"    // console.log(\"all rtms done inside prerequest in b=0......\")\r",
+							"    postman.setNextRequest(null)\r",
+							"    \r",
+							"}\r",
+							"      \r",
+							"    postman.setNextRequest(\"create\")\r",
+							"}\r",
+							"else{\r",
+							"    // console.log('rtm api is ended' )\r",
+							"    if((rtms.length) === index){\r",
+							"    // console.log(\"all rtms done inside prerequest in b=1.....\")\r",
+							"    postman.setNextRequest(null)\r",
+							"}\r",
+							"    postman.setNextRequest(\"create\")\r",
+							"}\r",
+							"    if((rtms.length) === index){\r",
+							"    // console.log(\"all rtms done inside prereques ful outside.....\")\r",
+							"    postman.setNextRequest(null)\r",
+							"}\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"let index = parseInt(pm.environment.get('count'));\r",
+							"let rtmid = JSON.parse (pm.environment.get('rtmidList'));\r",
+							"pm.environment.set('rtmname',rtmid[index] );\r",
+							"// console.log('rtmid name',pm.environment.get('rtmname'))\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{pat-QA}}/rtms",
+					"host": [
+						"{{pat-QA}}"
+					],
+					"path": [
+						"rtms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(\"creating new plan with subcategory name\", pm.environment.get('subcatname'))\r",
+							"\r",
+							"\r",
+							"pm.test(\" C31174614 Status code is 201\",() =>{\r",
+							"pm.expect(pm.response.code).to.eql(201)\r",
+							"});\r",
+							"\r",
+							"let prevcount= parseInt(pm.environment.get(\"count\"));\r",
+							"let nowcount = parseInt(prevcount +1)\r",
+							"pm.environment.set('count',nowcount);\r",
+							"\r",
+							"\r",
+							"pm.variables.set(\"currentDate\", new Date().toISOString().split('T')[0]);\r",
+							"\r",
+							"\r",
+							"var status = pm.response.status;\r",
+							"\r",
+							"if (status == \"Created\") {\r",
+							"    console.log(\"plan is created\")\r",
+							"    let bodyData=JSON.parse(responseBody)\r",
+							"    let plid = bodyData.planId\r",
+							"    pm.environment.set(\"PlanID\", plid);\r",
+							"\r",
+							"\r",
+							"\r",
+							"    let createdPlanIds = JSON.parse (pm.environment.get('createdPlanIds'));\r",
+							"    createdPlanIds.push(pm.environment.get('PlanID'))\r",
+							"    pm.environment.set('createdPlanIds',JSON.stringify(createdPlanIds) );\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"    \r",
+							"    postman.setNextRequest(\"get-sub-category-details\")\r",
+							"}\r",
+							"else{\r",
+							"    console.log(\"some error while creating plan\")\r",
+							"    let notCreatesubcategories = JSON.parse (pm.environment.get('notCreatesubcategories'));\r",
+							"    notCreatesubcategories.push(pm.environment.get('subcatname'))\r",
+							"    pm.environment.set('notCreatesubcategories',JSON.stringify(notCreatesubcategories) );\r",
+							"    // let prevcount= parseInt(pm.environment.get(\"count\"));\r",
+							"    // let nowcount = parseInt(prevcount +1)\r",
+							"    // pm.environment.set('count',nowcount);\r",
+							"    postman.setNextRequest(\"get-sub-category-details\")\r",
+							"}\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": {{uniquePlan}},\r\n    \"span\": {\r\n        \"startDate\": {{startDate}},\r\n        \"finishDate\": {{endDate}}\r\n    },\r\n    \"history\": {\r\n        \"startDate\": \"2023-10-15\",\r\n        \"finishDate\": \"2024-01-13\"\r\n    },\r\n    \"market\": {\r\n        \"id\": \"661657da7e2f3f6cc5486730\",\r\n        \"name\": {{market-name}}\r\n    },\r\n    \"country\": {\r\n        \"id\": \"661658227e2f3f6cc5486745\",\r\n        \"name\": {{country-name}},\r\n        \"code\": {{country-code}},\r\n        \"markets\": {\r\n            \"id\": \"661657da7e2f3f6cc5486730\",\r\n            \"name\": {{market-name}}\r\n        }\r\n    },\r\n    \"rtms\": [\r\n        {{rtmsbody}}\r\n    ],\r\n    \"accounts\": [],\r\n    \"categories\": [],\r\n    \"subCategories\": [\r\n        {{subcategoriesbody}}\r\n    ],\r\n    \"lines\": [],\r\n    \"families\": []\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{pat-QA}}/plans",
+					"host": [
+						"{{pat-QA}}"
+					],
+					"path": [
+						"plans"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
